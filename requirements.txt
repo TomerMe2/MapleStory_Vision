@@ -1,0 +1,7 @@
+# Python 3.7
+pywin32
+Pillow
+numpy
+opencv-python
+keyboard
+dearpygui
