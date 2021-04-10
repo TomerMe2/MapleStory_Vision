@@ -16,4 +16,5 @@ The program executes the following loop:
 
 
 This program was tailored to work with "Bereshit" private server, but it can work on other private servers as well, as long as they use the look that was present on GMS before the BigBang update. It's important for the HP and MP bars to be next to each other left\right wise instead of one on top of the other.
+In order to make it work with other private servers, change the variable MAPLE_WINDOW_NM in snapshoter.py to be the name of the desired MapleStory private server window.
 A version for current GMS can be created, please let me know if you need it by submitting an issue.
