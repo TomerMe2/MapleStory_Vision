@@ -11,7 +11,7 @@ The program executes the following loop:
 1. Take a picture of your MapleStory window.
 2. Find the countours in said picture.
 3. Find 3 countours in the bottom 10% of the screen that are ordered from left to right, roughly with the same size - these are the bars.
-4. Calculate the HP percentage and the MP percentage by going through a line in the middle of the bar and count gray pixels vs non-grey pixels. The percentage of current HP or MP is number_of_non_grey_pixels / number_of_grey_pixels.
+4. Calculate the HP percentage and the MP percentage by going through a line in the middle of the bar and count gray pixels vs non-gray pixels. The percentage of current HP or MP is number_of_non_gray_pixels / number_of_gray_pixels.
 5. If the percentage of the HP or the MP is below the threshold defined in the GUI, click on the button defined in the GUI to take the appropriate potion.
 
 
