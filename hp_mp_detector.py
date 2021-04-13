@@ -60,7 +60,7 @@ def _find_bars_from_candidates(candidates):
 
         return True
 
-    width_error = 13  # in pixels
+    width_error = 18  # in pixels
     height_error = 3  # in pixels
 
     for candidate1 in candidates:
@@ -89,7 +89,11 @@ def _percentage_of_full_in_bar(bar, im):
     line_y = bar.min_y + bar.height // 2
 
     black_clr = np.array([255, 0, 0])
-    grey_clr = np.array([190, 190, 190])
+    # kind of black is instead of grey when the bar is flashing
+    kind_of_black_clr = np.array([60, 60, 60])
+    # there are 2 shades of grey that we should accept
+    grey_clr1 = np.array([190, 190, 190])
+    grey_clr2 = np.array([200, 200, 200])
 
     line = im[line_y]
     number_of_prefixes_or_suffixes_pixels = 0
@@ -100,8 +104,9 @@ def _percentage_of_full_in_bar(bar, im):
             # it's still black and it made into our bar by mistake
             number_of_prefixes_or_suffixes_pixels += 1
 
-        if np.allclose(clr, grey_clr, atol=4):
-            # it's grey
+        elif np.allclose(clr, grey_clr1, atol=7) or np.allclose(clr, grey_clr2, atol=7) \
+                or np.allclose(clr, kind_of_black_clr, atol=7):
+            # it's grey or kind of black
             number_of_grey += 1
 
     pixels_in_bar = bar.max_x - bar.min_x - number_of_prefixes_or_suffixes_pixels
