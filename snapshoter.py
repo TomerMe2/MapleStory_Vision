@@ -5,7 +5,7 @@ import win32gui
 from hp_mp_detector import get_percentages_of_hp_mp
 import keyboard
 
-PIC_INTERVAL_SEC = 1
+PIC_INTERVAL_SEC = 0.25
 POSSIBLE_BTNS = ['insert', 'delete', 'home', 'end', 'page down', 'page up']
 MAPLE_WINDOW_NM = 'Beresheet 1.0'
 
