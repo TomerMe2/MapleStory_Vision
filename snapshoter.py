@@ -30,7 +30,8 @@ class Snapshoter:
         or
         HP$BTN$insert
         """
-        if self.pipe_connection.poll(0) is True:
+        # read all the messages in the queue
+        while self.pipe_connection.poll(0):
             # there's a message on the pipe!
             try:
                 request = self.pipe_connection.recv()
@@ -38,10 +39,10 @@ class Snapshoter:
                 request_type, command, val = request.split('$')
 
                 if command == 'VAL':
-                    number = int(val)
+                    number = float(val)
 
                     if number > 0.99 or number < 0:
-                        return
+                        continue
 
                     if request_type == 'HP':
                         self.hp_threshold = number
@@ -78,8 +79,12 @@ class Snapshoter:
     def picture_loop(self):
         while True:
             try:
+                self.listen_to_pipe()
+
+                if self.maple_window_handler is None:
+                    self.find_maple_window()
+
                 if win32gui.GetWindowText(win32gui.GetForegroundWindow()) == MAPLE_WINDOW_NM:
-                    self.listen_to_pipe()
 
                     win32gui.SetForegroundWindow(self.maple_window_handler)
                     bbox = win32gui.GetWindowRect(self.maple_window_handler)

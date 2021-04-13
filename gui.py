@@ -13,6 +13,7 @@ set_global_font_scale(1.5)
 set_theme("Gold")
 set_style_window_padding(30, 30)
 
+
 class GUI:
 
     def __init__(self, pipe_con):
@@ -24,6 +25,9 @@ class GUI:
     def change_hp_percentage(self, sender, data):
         percentage = get_value('% HP')
         self.pipe_con.send(f'HP$VAL${percentage / 100}')
+
+        if get_value('Currently doing nothing on HP. Pick button.') != 'Currently doing nothing on HP. Pick button.':
+            set_value('Currently doing nothing on HP. Pick button.', f'Taking HP on {get_value("% HP")}% by clicking on {self.current_hp_btn}.')
 
     def change_button(self, tp, selected):
         # tp should be HP or MP
@@ -46,6 +50,10 @@ class GUI:
     def change_mp_percentage(self, sender, data):
         percentage = get_value('% MP')
         self.pipe_con.send(f'MP$VAL${percentage / 100}')
+
+        if get_value('Currently doing nothing on MP. Pick button.') != 'Currently doing nothing on MP. Pick button.':
+            set_value('Currently doing nothing on MP. Pick button.',
+                      f'Taking MP on {get_value("% MP")}% by clicking on {self.current_mp_btn.split("#")[0]}.')
 
     def change_mp_keyboard_button(self, sender, data):
         self.current_mp_btn = sender
