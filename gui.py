@@ -58,17 +58,22 @@ def get_active_windows():
 class GUI:
 
     def __init__(self, pipe_con):
-        self.pipe_con = pipe_con
+        self.pipes = pipe_con
         # these two are needed for saving preferences only
         self.current_hp_btn = None
         self.current_mp_btn = None
         self.window_title = None
 
+    def send_to_pipes(self, message):
+        # Broadcast the message. If a snapshoter finds the message not relevant, it can ignore it.
+        for pipe in self.pipes:
+            pipe.send(message)
+
     def pick_maple_window(self, sender, data):
 
         def callback_on_picking_window(sender, data):
             self.window_title = sender
-            self.pipe_con.send(f'WINDOW\\{sender}')
+            self.send_to_pipes(f'WINDOW\\{sender}')
             set_value('Currently doing nothing. Pick MapleStory window.', f'Will work on {sender} window')
             delete_item('Pick Maple Window##1')
 
@@ -98,7 +103,7 @@ class GUI:
 
     def change_hp_percentage(self, sender, data):
         percentage = get_value('% HP')
-        self.pipe_con.send(f'HP\\VAL\\{percentage / 100}')
+        self.send_to_pipes(f'HP\\VAL\\{percentage / 100}')
 
         if get_value('Currently doing nothing on HP. Pick button.') != 'Currently doing nothing on HP. Pick button.':
             set_value('Currently doing nothing on HP. Pick button.', f'Taking HP on {get_value("% HP")}% by clicking on {self.current_hp_btn}.')
@@ -114,7 +119,7 @@ class GUI:
         elif val is None:
             val = selected.lower()
 
-        self.pipe_con.send(f'{tp}\\BTN\\{val}')
+        self.send_to_pipes(f'{tp}\\BTN\\{val}')
 
     def change_hp_keyboard_button(self, sender, data):
         self.current_hp_btn = sender
@@ -123,7 +128,7 @@ class GUI:
 
     def change_mp_percentage(self, sender, data):
         percentage = get_value('% MP')
-        self.pipe_con.send(f'MP\\VAL\\{percentage / 100}')
+        self.send_to_pipes(f'MP\\VAL\\{percentage / 100}')
 
         if get_value('Currently doing nothing on MP. Pick button.') != 'Currently doing nothing on MP. Pick button.':
             set_value('Currently doing nothing on MP. Pick button.',
@@ -165,7 +170,7 @@ class GUI:
                 self.change_hp_keyboard_button(prefs['HP_button'], None)
                 self.change_mp_keyboard_button(prefs['MP_button'], None)
 
-                self.pipe_con.send(f'WINDOW\\{prefs["window"]}')
+                self.send_to_pipes(f'WINDOW\\{prefs["window"]}')
                 set_value('Currently doing nothing. Pick MapleStory window.', f'Will work on {prefs["window"]} window')
 
         except:

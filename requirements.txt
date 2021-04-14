@@ -5,3 +5,7 @@ numpy
 opencv-python
 keyboard
 dearpygui
+# They are commented out because their installation is a pain and install_requirements.bat is handling it
+# pip install torch==1.8.1+cpu torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+# easyocr
+# python_Levenshtein

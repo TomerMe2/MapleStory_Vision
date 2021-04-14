@@ -1,25 +1,25 @@
-from threading import Thread
+from abc import ABC, abstractmethod
 from time import sleep
 from PIL import ImageGrab
 import win32gui
-from hp_mp_detector import get_percentages_of_hp_mp
-import keyboard
 
 
-PIC_INTERVAL_SEC = 0.25
-POSSIBLE_BTNS = ['insert', 'delete', 'home', 'end', 'page down', 'page up']
+class Snapshoter(ABC):
 
-
-class Snapshoter:
-
-    def __init__(self, pipe_connection):
+    def __init__(self, pipe_connection, pic_interval_sec):
         self.maple_window_name = None
         self.maple_window_handler = None
-        self.hp_threshold = 0.45
-        self.mp_threshold = 0.3
-        self.hp_pots_button = None
-        self.mp_pots_button = None
+        self.pic_interval_sec = pic_interval_sec  # in seconds
+
         self.pipe_connection = pipe_connection
+
+    @abstractmethod
+    def apply_request_from_pipe(self, split_request):
+        pass
+
+    @abstractmethod
+    def do_each_round(self, pil_img):
+        pass
 
     def listen_to_pipe(self):
         """
@@ -50,26 +50,8 @@ class Snapshoter:
                     if command == 'WINDOW':
                         self.maple_window_handler = None
                         self.maple_window_name = val
-
-                elif len(split_request) == 3:
-                    request_type, command, val = split_request
-
-                    if command == 'VAL':
-                        number = float(val)
-
-                        if number > 0.99 or number < 0:
-                            continue
-
-                        if request_type == 'HP':
-                            self.hp_threshold = number
-                        elif request_type == 'MP':
-                            self.mp_threshold = number
-
-                    elif command == 'BTN':
-                        if request_type == 'HP' and val in POSSIBLE_BTNS:
-                            self.hp_pots_button = val
-                        elif request_type == 'MP' and val in POSSIBLE_BTNS:
-                            self.mp_pots_button = val
+                else:
+                    self.apply_request_from_pipe(split_request)
 
             except:
                 pass
@@ -105,14 +87,10 @@ class Snapshoter:
                     win32gui.SetForegroundWindow(self.maple_window_handler)
                     bbox = win32gui.GetWindowRect(self.maple_window_handler)
                     img = ImageGrab.grab(bbox)
-                    percentage_hp, percentage_mp = get_percentages_of_hp_mp(img)
 
-                    if percentage_hp < self.hp_threshold and self.hp_pots_button is not None:
-                        keyboard.press_and_release(self.hp_pots_button)
-                    if percentage_mp < self.mp_threshold and self.mp_pots_button is not None:
-                        keyboard.press_and_release(self.mp_pots_button)
+                    self.do_each_round(img)
 
             except:
                 pass
 
-            sleep(PIC_INTERVAL_SEC)
+            sleep(self.pic_interval_sec)
