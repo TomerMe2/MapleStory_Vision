@@ -1,5 +1,6 @@
 # MapleStory Auto Pots
-Maplestory Auto Pots Program. This program is designed to work on before BigBang maplestory look.
+Maplestory Auto Pots Program. This program is designed to work on before BigBang maplestory look. <br/>
+This program is for Windows only.
 
 # To run this program:
 1. create a venv with Python 3.7
@@ -15,6 +16,6 @@ The program executes the following loop:
 5. If the percentage of the HP or the MP is below the threshold defined in the GUI, click on the button defined in the GUI to take the appropriate potion.
 
 
-This program was tailored to work with "Bereshit" private server, but it can work on other private servers as well, as long as they use the look that was present on GMS before the BigBang update. It's important for the HP and MP bars to be next to each other left\right wise instead of one on top of the other. <br/>
-In order to make it work with other private servers, change the variable MAPLE_WINDOW_NM in snapshoter.py to be the name of the desired MapleStory private server window. <br/>
+This program was tailored to work with "Bereshit" private server, but it can work on other private servers as well (such as MapleRoyals), as long as they use the look that was present on GMS before the BigBang update. It's important for the HP and MP bars to be next to each other left\right wise instead of one on top of the other. <br/>
+You can pick the MapleStory window using this apps GUI, so you can pick any private server you'll want, as long as it runs on your PC. <br/>
 A version for current GMS can be created, please let me know if you need it by submitting an issue.
