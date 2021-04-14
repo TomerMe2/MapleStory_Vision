@@ -5,13 +5,15 @@ import win32gui
 from hp_mp_detector import get_percentages_of_hp_mp
 import keyboard
 
+
 PIC_INTERVAL_SEC = 0.25
 POSSIBLE_BTNS = ['insert', 'delete', 'home', 'end', 'page down', 'page up']
-MAPLE_WINDOW_NM = 'Beresheet 1.0'
+
 
 class Snapshoter:
 
     def __init__(self, pipe_connection):
+        self.maple_window_name = None
         self.maple_window_handler = None
         self.hp_threshold = 0.45
         self.mp_threshold = 0.3
@@ -22,13 +24,17 @@ class Snapshoter:
     def listen_to_pipe(self):
         """
         Interface for comms:
-        TYPE$COMMAND$VAL
+        TYPE\COMMAND\VAL
+        or:
+        COMMAND\VAL
         For example:
-        HP$VAL$50
+        HP\VAL\50
         or
-        HP$VAL$70
+        HP\VAL\70
         or
-        HP$BTN$insert
+        HP\BTN\insert
+        or
+        WINDOW\Beresheet 1.0
         """
         # read all the messages in the queue
         while self.pipe_connection.poll(0):
@@ -36,24 +42,34 @@ class Snapshoter:
             try:
                 request = self.pipe_connection.recv()
 
-                request_type, command, val = request.split('$')
+                split_request = request.split('\\')
 
-                if command == 'VAL':
-                    number = float(val)
+                if len(split_request) == 2:
+                    command, val = split_request
 
-                    if number > 0.99 or number < 0:
-                        continue
+                    if command == 'WINDOW':
+                        self.maple_window_handler = None
+                        self.maple_window_name = val
 
-                    if request_type == 'HP':
-                        self.hp_threshold = number
-                    elif request_type == 'MP':
-                        self.mp_threshold = number
+                elif len(split_request) == 3:
+                    request_type, command, val = split_request
 
-                elif command == 'BTN':
-                    if request_type == 'HP' and val in POSSIBLE_BTNS:
-                        self.hp_pots_button = val
-                    elif request_type == 'MP' and val in POSSIBLE_BTNS:
-                        self.mp_pots_button = val
+                    if command == 'VAL':
+                        number = float(val)
+
+                        if number > 0.99 or number < 0:
+                            continue
+
+                        if request_type == 'HP':
+                            self.hp_threshold = number
+                        elif request_type == 'MP':
+                            self.mp_threshold = number
+
+                    elif command == 'BTN':
+                        if request_type == 'HP' and val in POSSIBLE_BTNS:
+                            self.hp_pots_button = val
+                        elif request_type == 'MP' and val in POSSIBLE_BTNS:
+                            self.mp_pots_button = val
 
             except:
                 pass
@@ -67,7 +83,7 @@ class Snapshoter:
             toplist, winlist = [], []
             win32gui.EnumWindows(enum_cb, toplist)
 
-            maple_window = [(hwnd, title) for hwnd, title in winlist if title == MAPLE_WINDOW_NM]
+            maple_window = [(hwnd, title) for hwnd, title in winlist if title == self.maple_window_name]
             if len(maple_window) == 0:
                 maple_window = None
                 sleep(10)
@@ -81,10 +97,10 @@ class Snapshoter:
             try:
                 self.listen_to_pipe()
 
-                if self.maple_window_handler is None:
+                if self.maple_window_handler is None and self.maple_window_name is not None:
                     self.find_maple_window()
 
-                if win32gui.GetWindowText(win32gui.GetForegroundWindow()) == MAPLE_WINDOW_NM:
+                if win32gui.GetWindowText(win32gui.GetForegroundWindow()) == self.maple_window_name:
 
                     win32gui.SetForegroundWindow(self.maple_window_handler)
                     bbox = win32gui.GetWindowRect(self.maple_window_handler)
