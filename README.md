@@ -1,6 +1,7 @@
 # MapleStory Vision
 This program will take potions automatically and pick drops automatically.
 This program is designed to work on before BigBang maplestory look.
+This program is for Windows only.
 
 # To run this program:
 1. create a venv with Python 3.7
