@@ -6,7 +6,7 @@ This program is for Windows only.
 # To run this program:
 1. create a venv with Python 3.7
 2. run install_requirements.bat
-3. run initiator.py file
+3. run initiator.py file as administrator. (For this program to be able to "press" on your keyboard)
 
 # Explanation
 This program has 3 parts. The GUI, the auto potions process and the auto drop pick process.
